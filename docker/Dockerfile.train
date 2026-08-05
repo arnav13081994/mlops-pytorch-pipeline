@@ -1,0 +1,24 @@
+# Stage 1: Base with dependencies
+FROM python:3.14.6-slim AS base
+
+WORKDIR /app
+
+COPY requirements/base.txt .
+RUN pip install --no-cache-dir -r base.txt
+
+
+# Stage 2: Training runtime
+FROM base AS training
+ENV PYTHONUNBUFFERED=1
+ENV PATH=/root/.local/bin:$PATH
+ENV CONFIG_PATH=/app/configs/training_config.yaml
+
+WORKDIR /app
+
+COPY requirements/train.txt .
+RUN pip install --no-cache-dir -r train.txt
+
+COPY src/ ./src/
+COPY configs/ ./configs/
+
+ENTRYPOINT ["python", "-m", "src.train"]
