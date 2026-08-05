@@ -80,7 +80,10 @@ def preprocess_image(image_bytes: bytes) -> torch.Tensor:
     try:
         image = Image.open(io.BytesIO(image_bytes)).convert("L")
         tensor = transform(image).unsqueeze(0)  # Add batch dimension
-        return tensor.to(ml_models["device"])
+        device = ml_models.get("device")
+        if device is None:
+            raise HTTPException(status_code=503, detail="Model not loaded")
+        return tensor.to(device)
     except Exception:
         raise HTTPException(status_code=400, detail="Invalid image file format")
 
