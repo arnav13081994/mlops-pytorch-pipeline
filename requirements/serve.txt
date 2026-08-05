@@ -1,0 +1,2 @@
+-r base.txt
+fastapi[standard]==0.141.1
