@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: model-serving
+  namespace: ml-training
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: ml-ops-assignment-3
+    app: serving
+  ports:
+    - name: http-serve
+      port: 80
+      targetPort: 8080
+      protocol: TCP
