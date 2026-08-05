@@ -18,8 +18,6 @@ The folllowing files were created to better meet the goals of the assignment eve
 
 *The architecture diagram and the setup instructions below were generated with AI assistance (Claude).*
 
-# TODO May need to remove HPA DEPENDING ON WHAT PROF REPLIES
-
 ```mermaid
 flowchart TD
     Dev["Developer"] -->|"docker build"| TrainImg["mlops-train:v1\n(docker/Dockerfile.train)"]
