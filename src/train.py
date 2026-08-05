@@ -34,7 +34,7 @@ def train_one_epoch(
     # Set model to training mode
     model.train()
 
-    for _, (inputs, targets) in enumerate(loader):
+    for inputs, targets in loader:
 
         inputs, targets = inputs.to(device), targets.to(device)
 
