@@ -1,5 +1,7 @@
 # mlops-pytorch-pipeline
 
+## Note: The PRs were initially merged onto the `develop` branch which was periodically merged with the `main` branch. All PRs were created following the convention of `feature/<PR_NAME>`
+
 A Fashion-MNIST image classifier taken through the full MLOps lifecycle: a PyTorch CNN trained and served behind a FastAPI app, both packaged as Docker images, and deployed to Kubernetes as a training `Job` and an autoscaled serving `Deployment`.
 
 ## Note:
@@ -13,6 +15,8 @@ The folllowing files were created to better meet the goals of the assignment eve
 
 1) `k8s/training-gpu-job.yaml` - a GPU-enabled version of the training job manifest, with the bonus `GPU resource requests (nvidia.com/gpu: 1) ` and a `nodeSelector` for adding node affinities for a GPU node. The original `k8s/training-job.yaml` assumed CPU-only nodes.
 2) `k8s/pvc.yaml` - a manifest for creating the PersistentVolumeClaims used for storing training data and model checkpoints. This was not explicitly mentioned in the assignment, but is necessary for the pipeline to work correctly.
+
+
 
 ## Architecture
 
