@@ -18,8 +18,6 @@ The folllowing files were created to better meet the goals of the assignment eve
 
 *The architecture diagram and the setup instructions below were generated with AI assistance (Claude).*
 
-# TODO May need to remove HPA DEPENDING ON WHAT PROF REPLIES
-
 ```mermaid
 flowchart TD
     Dev["Developer"] -->|"docker build"| TrainImg["mlops-train:v1\n(docker/Dockerfile.train)"]
@@ -114,7 +112,7 @@ docker run --rm \
 
 ### 3. Deploy to Kubernetes
 
-Load both images into your cluster's node first (Minikube example — use `kind load docker-image` on kind):
+Load both images into your cluster's node first (Minikube example - use `kind load docker-image` on kind):
 
 ```bash
 minikube image load mlops-train:v1
@@ -147,7 +145,6 @@ kubectl port-forward svc/model-serving 8080:80 -n ml-training
 curl -X POST http://localhost:8080/predict -F "image=@test_image.png"
 ```
 
-> Editing `k8s/training-job.yaml` after the Job has already been applied once? Its pod template is immutable — run `kubectl delete job training-job -n ml-training` before re-applying.
 
 ## Reflection
 
@@ -155,7 +152,7 @@ curl -X POST http://localhost:8080/predict -F "image=@test_image.png"
 
 
 
-I found it challenging to work with Kubernetes locally and to make sure every resource (Namespace, ConfigMap, Job, Deployment, Service, PVC) was created in the correct namespace and actually wired to the right one — a lot of the errors I hit came down to a manifest quietly defaulting to the wrong namespace or referencing a PersistentVolumeClaim that didn't exist yet. I spent quite some time debugging issues that now seem silly in hindsight. I also struggled with loading the trained PyTorch model in the serving app: my training script saved a full checkpoint dictionary (model weights plus optimizer state, epoch, and metrics) rather than just the raw weights, so a plain `load_state_dict` call failed until I understood I needed to unwrap the `model_state_dict` key first. Another issue I ran into was preparing the local `test_image.png` for inference — it had to be resized to `28x28` and converted to a single-channel grayscale image to match what the model was trained on. These are all very new things for me and were surprisingly tricky to get right.
+I found it challenging to work with Kubernetes locally and to make sure every resource (Namespace, ConfigMap, Job, Deployment, Service, PVC) was created in the correct namespace and actually wired to the right one - a lot of the errors I hit came down to a manifest quietly defaulting to the wrong namespace or referencing a PersistentVolumeClaim that didn't exist yet. I spent quite some time debugging issues that now seem silly in hindsight. I also struggled with loading the trained PyTorch model in the serving app: my training script saved a full checkpoint dictionary (model weights plus optimizer state, epoch, and metrics) rather than just the raw weights, so a plain `load_state_dict` call failed until I understood I needed to unwrap the `model_state_dict` key first. Another issue I ran into was preparing the local `test_image.png` for inference - it had to be resized to `28x28` and converted to a single-channel grayscale image to match what the model was trained on. These are all very new things for me and were surprisingly tricky to get right.
 
 I also spent a fair amount of time getting the train and serve Dockerfiles to actually share their build cache. Initially each Dockerfile reinstalled torch/torchvision through slightly different `requirements` files and setup steps, so Docker correctly treated them as different layers and reinstalled the same multi-gigabyte dependencies twice on every rebuild. Extracting a shared `requirements/base.txt` and making both Dockerfiles' base stage byte-identical let Docker's cache recognize the layer as genuinely reusable, so the expensive install only runs once across both images.
 
